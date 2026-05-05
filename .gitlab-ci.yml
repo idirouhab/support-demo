@@ -1,0 +1,50 @@
+stages:
+  - test
+  - quality
+  - build
+
+backend_tests:
+  image: python:3.12
+  stage: test
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - pytest
+
+frontend_tests:
+  image: node:20
+  stage: test
+  before_script:
+    - cd frontend
+    - npm install
+  script:
+    - npm test
+
+bug_fix_evidence:
+  image: alpine:3.20
+  stage: quality
+  variables:
+    GIT_DEPTH: "0"
+  before_script:
+    - apk add --no-cache git
+  script:
+    - sh scripts/ci/check_bug_fix_evidence.sh
+  artifacts:
+    when: always
+    paths:
+      - gitlab-quality-evidence.txt
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID'
+    - if: '$CI_COMMIT_BRANCH'
+
+frontend_build:
+  image: node:20
+  stage: build
+  before_script:
+    - cd frontend
+    - npm install
+  script:
+    - npm run build
