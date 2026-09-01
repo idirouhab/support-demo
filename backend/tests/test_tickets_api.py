@@ -41,6 +41,16 @@ def test_in_progress_is_canonical_api_status() -> None:
     assert "in_progress" in CANONICAL_TICKET_STATUSES
 
 
+def test_list_tickets_includes_resolved_tickets() -> None:
+    response = client.get("/api/tickets")
+
+    assert response.status_code == 200
+    ticket_by_id = {ticket["id"]: ticket for ticket in response.json()}
+
+    assert "T-104" in ticket_by_id
+    assert ticket_by_id["T-104"]["status"] == "resolved"
+
+
 def test_all_returned_statuses_are_canonical() -> None:
     response = client.get("/api/tickets")
     tickets = response.json()

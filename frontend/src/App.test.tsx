@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import App from './App';
+import { fetchTickets } from './api';
 import type { Ticket } from './types';
 
 const tickets: Ticket[] = [
@@ -45,6 +46,22 @@ function mockTicketResponse(nextTickets: Ticket[]) {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+describe('fetchTickets', () => {
+  it.each([400, 500])('rejects HTTP %s without parsing the error body', async (status) => {
+    const json = vi.fn().mockRejectedValue(new SyntaxError('Unexpected token <'));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status, json }));
+
+    await expect(fetchTickets()).rejects.toThrow(`Ticket request failed (HTTP ${status})`);
+    expect(json).not.toHaveBeenCalled();
+  });
+
+  it('accepts a successful empty ticket list', async () => {
+    mockTicketResponse([]);
+
+    await expect(fetchTickets()).resolves.toEqual([]);
+  });
 });
 
 describe('App', () => {

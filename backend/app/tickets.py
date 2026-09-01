@@ -38,4 +38,4 @@ TICKETS = [
 
 
 def list_tickets() -> list[Ticket]:
-    return [ticket for ticket in TICKETS if ticket.status != "resolved"]
+    return list(TICKETS)
