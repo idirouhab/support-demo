@@ -54,7 +54,7 @@ The `bug_fix_evidence` job publishes `gitlab-quality-evidence.txt` so reviewers 
 
 ## GitHub and Codex
 
-The GitHub repository is [idirouhab/support-demo](https://github.com/idirouhab/support-demo).
+The GitHub repository is [idir-oai/support-demo](https://github.com/idir-oai/support-demo).
 Opening an issue as a repository writer starts Codex implementation, runs the quality
 checks, and creates a `codex/issue-<number>` branch and pull request. A separate
 read-only Codex review posts feedback on the PR. Nothing is merged or deployed

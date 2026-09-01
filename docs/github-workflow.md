@@ -1,6 +1,6 @@
 # GitHub issue → implementation → PR → review
 
-Repository: [idirouhab/support-demo](https://github.com/idirouhab/support-demo).
+Repository: [idir-oai/support-demo](https://github.com/idir-oai/support-demo).
 GitHub is an additional automation and review surface. The `origin` GitLab remote,
 `.gitlab-ci.yml`, GitLab merge-request template, and `bug_fix_evidence` gate remain
 unchanged. GitHub pushes do not automatically update GitLab.
@@ -86,7 +86,7 @@ The local `.env` is ignored by Git and does not exist on GitHub runners. Only th
 file. To replace it later, use the CLI's interactive secret prompt:
 
 ```bash
-gh secret set OPENAI_API_KEY --repo idirouhab/support-demo
+gh secret set OPENAI_API_KEY --repo idir-oai/support-demo
 ```
 
 Authentication uses the OpenAI API key, not a ChatGPT subscription. Implementations
@@ -101,7 +101,7 @@ See the [official Codex Action documentation](https://learn.chatgpt.com/docs/git
 For an existing open issue, or a failed run before branch publication:
 
 ```bash
-gh workflow run codex-issue.yml --repo idirouhab/support-demo --ref main -f issue_number=123
+gh workflow run codex-issue.yml --repo idir-oai/support-demo --ref main -f issue_number=123
 ```
 
 Only repository writers can request work. Both the original actor and the rerun
@@ -119,14 +119,14 @@ cancel that job explicitly if needed.
 To rerun a review without regenerating the implementation:
 
 ```bash
-gh workflow run codex-review.yml --repo idirouhab/support-demo --ref main -f pr_number=456
+gh workflow run codex-review.yml --repo idir-oai/support-demo --ref main -f pr_number=456
 ```
 
 Inspect workflow runs and logs in the repository's Actions tab or with:
 
 ```bash
-gh run list --repo idirouhab/support-demo
-gh run view RUN_ID --repo idirouhab/support-demo --log-failed
+gh run list --repo idir-oai/support-demo
+gh run view RUN_ID --repo idir-oai/support-demo --log-failed
 ```
 
 Failures and no-patch outcomes leave an issue comment with the workflow link.
