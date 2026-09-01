@@ -13,6 +13,7 @@ Core areas:
 - `docs/`: engineering notes, issue history, quality process, and release review guidance
 - `.gitlab-ci.yml`: GitLab pipeline for tests, quality evidence, and build verification
 - `.gitlab/merge_request_templates/`: merge request templates for consistent review evidence
+- `.github/workflows/`: GitHub CI, issue implementation, and read-only Codex PR review
 - `scripts/ci/`: CI helper scripts used locally and in GitLab
 
 ## Status Contract
@@ -50,6 +51,17 @@ GitLab is the review and enforcement layer after local changes are ready. The pi
 - `frontend_build`: production frontend build
 
 The `bug_fix_evidence` job publishes `gitlab-quality-evidence.txt` so reviewers can see what GitLab checked before deciding whether to merge and release.
+
+## GitHub and Codex
+
+The GitHub repository is [idirouhab/support-demo](https://github.com/idirouhab/support-demo).
+Opening an issue as a repository writer starts Codex implementation, runs the quality
+checks, and creates a `codex/issue-<number>` branch and pull request. A separate
+read-only Codex review posts feedback on the PR. Nothing is merged or deployed
+automatically. Public issues from people without write access do not start Codex.
+
+See [the GitHub workflow guide](docs/github-workflow.md) for setup, manual retries,
+security boundaries, usage costs, and the relationship to the existing GitLab CI.
 
 ## Local Setup
 

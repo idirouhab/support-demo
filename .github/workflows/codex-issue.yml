@@ -1,0 +1,230 @@
+name: Codex issue implementation
+run-name: Codex implementation for issue #${{ github.event.issue.number || inputs.issue_number }}
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Open issue to implement (also used to retry a failed run)
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: codex-issue-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.event_name != 'workflow_dispatch' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+    outputs:
+      should_implement: ${{ steps.issue.outputs.should_implement }}
+      issue_number: ${{ steps.issue.outputs.issue_number }}
+      issue_json: ${{ steps.issue.outputs.issue_json }}
+      base_ref: ${{ steps.issue.outputs.base_ref }}
+      base_sha: ${{ steps.issue.outputs.base_sha }}
+      branch: ${{ steps.issue.outputs.branch }}
+      existing_pr: ${{ steps.issue.outputs.existing_pr }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Check write access, issue state, and existing work
+        id: issue
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        with:
+          script: |
+            const { prepareIssue } = require('./scripts/github/automation.cjs');
+            await prepareIssue({ github, context, core });
+
+  implement:
+    needs: prepare
+    if: needs.prepare.outputs.should_implement == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      has_patch: ${{ steps.patch.outputs.has_patch }}
+      patch_artifact: ${{ steps.patch.outputs.patch_artifact }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies before exposing the Codex proxy
+        run: |
+          python -m pip install -r backend/requirements.txt
+          npm ci --prefix frontend
+      - name: Save issue text as data, not shell code
+        env:
+          ISSUE_JSON: ${{ needs.prepare.outputs.issue_json }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          Path(os.environ['RUNNER_TEMP'], 'codex-issue.json').write_text(os.environ['ISSUE_JSON'])
+          PY
+      - name: Implement the issue
+        uses: openai/codex-action@v1
+        env:
+          CODEX_ISSUE_FILE: ${{ runner.temp }}/codex-issue.json
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          sandbox: workspace-write
+          safety-strategy: drop-sudo
+          model: ${{ vars.CODEX_MODEL }}
+          effort: medium
+          codex-args: '["--ephemeral"]'
+          prompt-file: .github/codex/issue.md
+          output-file: ${{ runner.temp }}/codex-summary.md
+      # Only serialize data after Codex. Never expose a write token in this job.
+      - name: Capture changes, including new regression tests
+        id: patch
+        run: |
+          git add --intent-to-add -- .
+          git diff --binary HEAD > "$RUNNER_TEMP/codex.patch"
+          echo "patch_artifact=codex-issue-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          if [ -s "$RUNNER_TEMP/codex.patch" ]; then
+            echo 'has_patch=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'has_patch=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: steps.patch.outputs.has_patch == 'true'
+        with:
+          name: ${{ steps.patch.outputs.patch_artifact }}
+          path: ${{ runner.temp }}/codex.patch
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codex-implementation-summary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/codex-summary.md
+          if-no-files-found: ignore
+          retention-days: 7
+
+  validate:
+    needs: [prepare, implement]
+    if: needs.implement.outputs.has_patch == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/checks.yml
+    with:
+      ref: ${{ needs.prepare.outputs.base_sha }}
+      base_sha: ${{ needs.prepare.outputs.base_sha }}
+      patch_artifact: ${{ needs.implement.outputs.patch_artifact }}
+
+  publish:
+    needs: [prepare, implement, validate]
+    if: needs.implement.outputs.has_patch == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    outputs:
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+      pr_url: ${{ steps.pr.outputs.pr_url }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.implement.outputs.patch_artifact }}
+          path: ${{ runner.temp }}/codex-patch
+      - name: Revalidate and apply the tested patch
+        run: |
+          python3 scripts/github/validate_patch.py "$RUNNER_TEMP/codex-patch/codex.patch"
+          git apply --index "$RUNNER_TEMP/codex-patch/codex.patch"
+      # No generated application code or tests execute in this write-token job.
+      - name: Commit and push the issue branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+          ISSUE_NUMBER: ${{ needs.prepare.outputs.issue_number }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$BRANCH"
+          git -c core.hooksPath=/dev/null commit -m "Implement issue #$ISSUE_NUMBER with Codex"
+          git -c core.hooksPath=/dev/null -c credential.helper='!gh auth git-credential' push origin "HEAD:refs/heads/$BRANCH"
+      - name: Open a PR and link it from the issue
+        id: pr
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ needs.prepare.outputs.issue_number }}
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+          BASE_REF: ${{ needs.prepare.outputs.base_ref }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const { publishPullRequest } = require('./scripts/github/automation.cjs');
+            await publishPullRequest({ github, context, core });
+
+  # A reusable call runs automatically even when the PR was made with GITHUB_TOKEN.
+  review:
+    needs: publish
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write
+    uses: ./.github/workflows/codex-review.yml
+    with:
+      pr_number: ${{ needs.publish.outputs.pr_number }}
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  report_problem:
+    needs: [prepare, implement, validate, publish, review]
+    if: >-
+      always() && needs.prepare.outputs.should_implement == 'true' &&
+      (needs.implement.result == 'failure' || needs.validate.result == 'failure' ||
+       needs.publish.result == 'failure' || needs.review.result == 'failure' ||
+       needs.implement.outputs.has_patch == 'false')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Report incomplete automation without claiming success
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ needs.prepare.outputs.issue_number }}
+          HAS_PATCH: ${{ needs.implement.outputs.has_patch }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const reason = process.env.HAS_PATCH === 'false'
+              ? 'Codex did not produce a patch. Review the task description and implementation summary.'
+              : 'An implementation, validation, publishing, or review step failed. Human attention is needed.';
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              body: `${reason}\n\n[Inspect the workflow run](${process.env.RUN_URL}). Nothing was merged or deployed.`,
+            });

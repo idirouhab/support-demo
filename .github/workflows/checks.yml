@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: true
+      base_sha:
+        type: string
+        required: true
+      patch_artifact:
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        id: checkout
+        with:
+          ref: ${{ inputs.ref || github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        if: inputs.patch_artifact != ''
+        with:
+          name: ${{ inputs.patch_artifact }}
+          path: ${{ runner.temp }}/codex-patch
+
+      - name: Validate and apply the proposed patch
+        id: apply_patch
+        if: inputs.patch_artifact != ''
+        run: |
+          python3 scripts/github/validate_patch.py "$RUNNER_TEMP/codex-patch/codex.patch"
+          git apply --index "$RUNNER_TEMP/codex-patch/codex.patch"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Automation regression tests
+        run: |
+          python3 -m unittest discover -s scripts/github/tests -v
+          node --test scripts/github/automation.test.cjs
+
+      - name: Install backend dependencies
+        id: backend_dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Install frontend dependencies
+        id: frontend_dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Backend tests
+        if: ${{ !cancelled() && steps.backend_dependencies.outcome == 'success' }}
+        working-directory: backend
+        run: python -m pytest
+
+      - name: Frontend tests
+        if: ${{ !cancelled() && steps.frontend_dependencies.outcome == 'success' }}
+        working-directory: frontend
+        run: npm test
+
+      - name: Frontend build
+        if: ${{ !cancelled() && steps.frontend_dependencies.outcome == 'success' }}
+        working-directory: frontend
+        run: npm run build
+
+      - name: Bug-fix evidence gate
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' && (inputs.patch_artifact == '' || steps.apply_patch.outcome == 'success') }}
+        env:
+          BASE_REF: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}
+          CHECK_WORKTREE: ${{ inputs.patch_artifact != '' && '1' || '0' }}
+          EVIDENCE_FILE: ${{ runner.temp }}/github-quality-evidence.txt
+        run: |
+          if [ "$BASE_REF" = '0000000000000000000000000000000000000000' ]; then
+            echo 'Initial branch push has no prior revision. Subsequent pushes and PRs require bug-fix evidence.' > "$EVIDENCE_FILE"
+          else
+            sh scripts/ci/check_bug_fix_evidence.sh
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/github-quality-evidence.txt
+          if-no-files-found: ignore
+          retention-days: 7
