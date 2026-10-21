@@ -1,6 +1,6 @@
 # GitHub issue → implementation → PR → review
 
-Repository: [idir-oai/support-demo](https://github.com/idir-oai/support-demo).
+Repository: [idirouhab/support-demo](https://github.com/idirouhab/support-demo).
 GitHub is an additional automation and review surface. The `origin` GitLab remote,
 `.gitlab-ci.yml`, GitLab merge-request template, and `bug_fix_evidence` gate remain
 unchanged. GitHub pushes do not automatically update GitLab.
@@ -69,7 +69,7 @@ workflow dispatches are available:
 | `.github/workflows/codex-review.yml` | Same-repository PR events, reusable review, and manual review |
 | `.github/workflows/checks.yml` | Tests, build, automation tests, and existing evidence gate |
 | `.github/codex/issue.md` | Implementation task and quality/security constraints |
-| `scripts/github/` | Tested API orchestration and patch validation |
+| `scripts/github/` | Tested API orchestration, isolated runner setup, and patch validation |
 
 Required repository settings:
 
@@ -86,7 +86,7 @@ The local `.env` is ignored by Git and does not exist on GitHub runners. Only th
 file. To replace it later, use the CLI's interactive secret prompt:
 
 ```bash
-gh secret set OPENAI_API_KEY --repo idir-oai/support-demo
+gh secret set OPENAI_API_KEY --repo idirouhab/support-demo
 ```
 
 Authentication uses the OpenAI API key, not a ChatGPT subscription. Implementations
@@ -101,7 +101,7 @@ See the [official Codex Action documentation](https://learn.chatgpt.com/docs/git
 For an existing open issue, or a failed run before branch publication:
 
 ```bash
-gh workflow run codex-issue.yml --repo idir-oai/support-demo --ref main -f issue_number=123
+gh workflow run codex-issue.yml --repo idirouhab/support-demo --ref main -f issue_number=123
 ```
 
 Only repository writers can request work. Both the original actor and the rerun
@@ -119,14 +119,14 @@ cancel that job explicitly if needed.
 To rerun a review without regenerating the implementation:
 
 ```bash
-gh workflow run codex-review.yml --repo idir-oai/support-demo --ref main -f pr_number=456
+gh workflow run codex-review.yml --repo idirouhab/support-demo --ref main -f pr_number=456
 ```
 
 Inspect workflow runs and logs in the repository's Actions tab or with:
 
 ```bash
-gh run list --repo idir-oai/support-demo
-gh run view RUN_ID --repo idir-oai/support-demo --log-failed
+gh run list --repo idirouhab/support-demo
+gh run view RUN_ID --repo idirouhab/support-demo --log-failed
 ```
 
 Failures and no-patch outcomes leave an issue comment with the workflow link.
@@ -135,11 +135,46 @@ patches for one day. An existing failing application test also blocks new work,
 unless that issue fixes the failure. Keep that failure visible instead of weakening
 the checks.
 
+### Artifact upload DNS failures
+
+`Failed to CreateArtifact ... getaddrinfo EAI_AGAIN
+results-receiver.actions.githubusercontent.com` means the runner could not resolve
+GitHub's artifact service. Changing the OpenAI API key does not repair this failure.
+
+The current Codex Action's Linux `drop-sudo` implementation can change system
+service socket permissions and break `systemd-resolved`, as reported in
+[upstream issue #160](https://github.com/openai/codex-action/issues/160).
+Both Codex jobs instead use the supported `unprivileged-user` strategy with a
+dedicated account, leaving service sockets untouched. They retain their existing
+sandbox modes. This avoids that specific failure mechanism; unrelated transient
+DNS failures can still occur.
+
+After a workflow fix reaches `main`, use the manual issue dispatch above to load
+the new definition. Re-running an old run uses its original workflow revision.
+Cancel an old stuck run before dispatching the same issue so it does not hold the
+per-issue concurrency slot.
+
+GitHub retries whole jobs, not individual upload steps. If the implementation job
+fails while uploading its patch or summary, retrying it runs Codex again and uses
+API credits. If the patch is already uploaded and only a later validation or
+review job has a transient failure, **Re-run failed jobs** can reuse successful
+jobs. Inspect any existing issue branch before retrying publication. Never ignore
+a missing patch, bypass validation, or switch the safety strategy to `unsafe` to
+make the run appear successful.
+
 ## Trust boundaries and limitations
 
 - Only the Codex action receives the OpenAI secret, through its protected API
-  proxy. It uses `drop-sudo`, `workspace-write` for implementation, and `read-only`
-  for review. Credentials are not persisted by checkout.
+  proxy. It runs as a dedicated non-sudo user with `workspace-write` for
+  implementation and `read-only` for review. Credentials are not persisted by
+  checkout. The worker never joins the runner, sudo, or Docker groups.
+- Runner setup gives the implementation worker write access only to application
+  and documentation paths. Git metadata, workspace ancestors, automation, issue
+  input, and output-directory entries remain non-writable. The reviewer has no
+  writable checkout paths, and its setup helper is copied from the trusted
+  default branch before the PR is checked out. The model's shell environment
+  restores the installed toolchain paths and writes quality evidence to scratch
+  space. Worker processes are stopped before capture and artifact upload.
 - The implementation runner has no repository write token. The publisher has no
   OpenAI key and never executes generated application code, dependency installs,
   or tests. Patch validation is repeated on its fresh checkout before applying it.
@@ -167,6 +202,12 @@ requirements). Existing GitLab jobs remain Python 3.12 / Node 20.
 python3 -m unittest discover -s scripts/github/tests -v
 node --test scripts/github/automation.test.cjs
 ```
+
+On disposable Ubuntu runners, CI also sets `CODEX_RUNNER_INTEGRATION=1` for the
+Python suite to test real UNIX-user/ACL isolation and output-file protections.
+These opt-in tests require passwordless sudo and the `acl` package; do not enable
+them on a shared or long-lived host. Ordinary local runs still execute the
+portable validation tests without creating an operating-system user.
 
 Run `python -m pytest` from `backend`, and `npm test` / `npm run build` from
 `frontend`. For the existing gate, stage new files before previewing so new tests

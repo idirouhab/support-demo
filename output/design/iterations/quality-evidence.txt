@@ -1,0 +1,29 @@
+GitLab bug-fix evidence gate
+Diff base: HEAD
+
+Changed files:
+.github/workflows/checks.yml
+.github/workflows/codex-issue.yml
+.github/workflows/codex-review.yml
+.gitignore
+.gitlab-ci.yml
+AGENTS.md
+backend/app/main.py
+backend/app/models.py
+backend/app/tickets.py
+backend/tests/test_tickets_api.py
+docs/README.md
+docs/bug-log.md
+docs/github-workflow.md
+frontend/package-lock.json
+frontend/package.json
+frontend/src/App.test.tsx
+frontend/src/App.tsx
+frontend/src/api.ts
+frontend/src/main.tsx
+frontend/src/status.test.ts
+frontend/src/status.ts
+frontend/src/styles.css
+frontend/src/types.ts
+
+Evidence gate passed.

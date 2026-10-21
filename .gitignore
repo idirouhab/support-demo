@@ -16,3 +16,7 @@ coverage/
 # Local env
 .env
 .env.local
+.cloud-agents.json
+.cloud-agents.tmp
+.cloud-agents.json
+.cloud-agents.tmp

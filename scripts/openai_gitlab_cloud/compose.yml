@@ -1,0 +1,20 @@
+services:
+  webhook:
+    build: .
+    restart: unless-stopped
+    env_file: .webhook.env
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - webhook-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 90s
+
+volumes:
+  webhook-data:

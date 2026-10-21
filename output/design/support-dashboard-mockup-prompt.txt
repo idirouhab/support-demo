@@ -1,0 +1,26 @@
+Use case: ui-mockup
+Concept name: Queue workspace
+Create a single realistic, production-quality desktop web app UI mock image for the existing Support Operations ticket management app. Target dimensions: 1440 x 1024 pixels, landscape, straight-on flat screen capture, app content only, no browser chrome, no device frame, no perspective. This is one cohesive screen, not a collage.
+The attached image is the existing app for content and feature grounding. Redesign it to feel substantially more professional, calm, precise and polished. Preserve the actual purpose and core areas: ticket summary, current ticket queue, editable ticket details. The existing app's source supports editing title, description and status; show that workflow. Do not reproduce the old demo technical subtitle, buggy summary numbers, Unknown status, - B1 suffixes, or GitLab CI badge.
+
+Visual direction: tasteful enterprise support workspace, light theme, white surfaces, pale cool-gray page background, near-black navy text, muted gray secondary text, one restrained royal-blue accent derived from the app's existing blue. Small elegant line icons. Readable Inter or similar sans-serif at 14–16px body size with generous line-height, 30px page title and precise 1px dividers. Consistent 8px corner radii only on inputs and small controls. Minimal shadows. Pixel-perfect spacing and alignment. Sophisticated functional UI, no decorative illustrations, no huge hero, no glossy gradients, no oversized cards or metric card clutter.
+
+Layout:
+Full-width application shell. Slim 68px white top bar: simple small blue ticket icon and "Support Operations" at left, understated "Ticket workspace" at right; no invented user profile or navigation destinations.
+Below, generous 48px horizontal margins. Header "Ticket dashboard" and short subtitle "A clear view of every customer request."
+A restrained horizontal metrics strip with three well spaced groups separated by thin vertical rules: "Total tickets" 4, "Active" 3, "High priority" 1. Bold dark metric figures, small neutral labels. No trends or charts.
+Main workspace below begins with the title "Current tickets" and muted supporting text "4 tickets in your queue". One continuous white table surface on the left taking about two thirds of the width and an adjacent white detail panel of roughly 360px on the right, separated by a fine divider. Integrate both into the page, no stacked cards inside cards. The detail panel is open and the first row is selected with a pale blue tint and subtle blue leading indicator.
+
+Queue columns: Ticket, Requester, Status, Priority, Created, a narrow chevron action. Four roomy rows with light row dividers. Keep all four fully visible and legible. Ticket IDs are small muted text above subject lines; requester names on two lines if needed. No checkbox, search, filter, sort, pagination, new-ticket, export, analytics or automation controls.
+Use these exact rows and internally consistent statuses:
+T-101 | Cannot download invoice | Maya Patel | Open | High | Oct 21
+T-102 | Refund request needs manager approval | Owen Chen | In progress | Medium | Oct 20
+T-103 | Update billing email | Sofia Garcia | Pending | Low | Oct 20
+T-104 | Login issue after password reset | Leo Martin | Resolved | Medium | Oct 19
+Use nuanced small badges with both text and a small icon/dot, not color alone: Open blue, In progress lavender, Pending amber, Resolved green. High priority subtle red flag + text, Medium amber understated, Low neutral gray. Priority style must be distinct from status badges. Modest realistic row height and excellent column alignment, no oversized cards for rows.
+
+Details panel:
+Small gray "T-101", heading "Ticket details", close icon. Then form field labeled "Title" with "Cannot download invoice"; field labeled "Description" with text "The download button returns an error when I try to export my latest invoice." in a comfortably sized textarea; field labeled "Status" with dropdown set to "Open". Below, subdued read-only requester "Maya Patel", priority "High", created "Oct 21, 2026 · 11:15 AM". Primary blue "Save changes" button and secondary "Cancel" at the bottom. Clean generous spacing and a clear focal action. No chat, assignee, comments, tags, attachments, SLA, AI controls, notifications, or other invented features.
+
+Current date anchor is Wednesday October 21, 2026 in Europe/Madrid; visible dates must match the rows above.
+Create realistic, production-quality UI with clear hierarchy, strong typography, purposeful spacing. Focus this screen on reviewing and editing support tickets. Group with whitespace, alignment and typography first, then thin separators, then subtle tint; borders and elevation sparingly. No centered whole-app card on a contrasting background. No cards inside cards. Maximum two fonts. Long-form line length under 65 characters. No clipped text, overlapping fields, garbled text, watermark, numeric option labels, invented feature inventory, or extra sidebars. Every visible word must be well rendered.

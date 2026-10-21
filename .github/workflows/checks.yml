@@ -54,7 +54,13 @@ jobs:
           node-version: '22'
 
       - name: Automation regression tests
+        env:
+          CODEX_RUNNER_INTEGRATION: '1'
         run: |
+          if ! command -v setfacl >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends --yes acl
+          fi
           python3 -m unittest discover -s scripts/github/tests -v
           node --test scripts/github/automation.test.cjs
 

@@ -1,0 +1,7 @@
+*
+!Dockerfile
+!cloud.py
+!gitlab_bridge.py
+!webhook.py
+!reviewer.md
+!merger.md

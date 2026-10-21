@@ -1,0 +1,8 @@
+.state.json
+.state.tmp
+.env
+.webhook.env
+.webhook-data/
+__pycache__/
+.pytest_cache/
+.venv/

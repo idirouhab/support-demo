@@ -1,0 +1,36 @@
+Use case: ui-mockup
+Concept name: Dispatch desk
+Create ONE exceptionally refined, modern desktop interface image for the existing Support Operations ticket app. 1440 x 1024 landscape viewport, straight-on app UI only, no browser window, no device mockup, no perspective, no annotations outside the app.
+The attached previous mock was REJECTED by the user: it looked like a toy and a generic SaaS dashboard. Use it ONLY to understand the app's real data and edit fields. REPLACE the composition, hierarchy, typography, and visual language. Do not preserve its giant headers, rounded metric cards, bright blue button, rainbow pills, two-table-and-form-card dashboard or ticket logo. This is a structural redesign.
+
+Art direction: a precise editorial operations tool for people who work in tickets all day. Understated, extremely composed, dense where useful, mature and bespoke. A matte graphite queue and a warm porcelain ticket canvas. Quiet contrast, typography and careful column rhythm carry the design. Fine rules, flat surfaces, small 3–4px control corners. A single pale citrine accent used sparingly. No gradients, glows, ornamental art, glass, 3D, drop shadows or rounded-card soup. No giant hero, no slogan, no avatar bubbles, no blue-purple SaaS kit.
+Use a refined neutral sans similar to Neue Haas Grotesk / Geist; use a small crisp monospace ONLY for ticket IDs and utility metadata. Typography 13–15px for normal UI, 24–28px for the main ticket title, 11–12px for quiet section labels. Avoid heavy bold everywhere. Perfect legibility and strong contrast. Text is sharp, measured, professionally typeset.
+
+Composition, exact overall geometry:
+A full-bleed 52px graphite application bar. At x24, a minimal small paired-stroke mark and actual brand text "Support Operations", medium weight 14px. At x420 subdued breadcrumb "Workspace / Tickets". At far right a tiny neutral status indicator and "4 total · 3 active · 1 high priority" with clearly separated, restrained counts. No metric cards.
+Below, a 360px-wide graphite queue pane at left, extending to the bottom. Warm off-white ticket canvas occupying all remaining width at right. Divider between the two is a single 1px rule, no floating containers. Overall background graphite #191B1B for queue and #F7F7F2 for editor, dark text #202322. Accent pale citrine #DDEE9A, used for the selected queue edge and primary button only.
+
+Left queue pane:
+32px top padding, small mono label "QUEUE", below normal 18px "Current tickets" with quiet number "04" aligned right.
+Four consecutive ticket rows, each approx 120px tall, separated by subtle charcoal rules, not separate rounded cards. All four fully visible. IDs small monospace, titles 14px medium, requester 12px muted. Status is a tiny 10px line icon and text, never a filled badge. Priority is a small icon and quiet text. Active selected row has a very subtle lighter graphite fill, 2px citrine left rule, no rounded corners.
+Data exactly:
+T-101 — Cannot download invoice — Maya Patel — Open — High
+T-102 — Refund request needs manager approval — Owen Chen — In progress — Medium
+T-103 — Update billing email — Sofia Garcia — Pending — Low
+T-104 — Login issue after password reset — Leo Martin — Resolved — Medium
+Wrap long subjects naturally in two lines with deliberate spacing. Use monochromatic line symbols to distinguish status, e.g. empty circle Open, half circle In progress, clock Pending, check Resolved. A tiny muted terracotta mark for High is allowed; otherwise use neutral text. No brightly colored pill backgrounds.
+At bottom of queue, small muted "4 tickets" utility text. No navigation menu inventing other products, no analytics, settings or account controls.
+
+Right selected ticket workspace:
+Top slim utility row with left "T-101" in mono and "Ticket details", right previous/next chevrons for ticket review. Beneath a fine horizontal divider.
+Content has 56px horizontal padding. Primary editable title "Cannot download invoice" at 28px, not a giant display heading. A tiny subdued pencil indicator makes editing discoverable. Small uppercase/muted label "TITLE" above it. The title is the main focal point, no duplicated "Ticket dashboard" heading.
+Below, horizontal properties strip using whitespace and vertical fine rules, with small labels above actual values: Status / "Open" with small neutral circular icon and dropdown chevron; Priority / "High"; Requester / "Maya Patel"; Created / "Oct 21, 2026".
+Below a thin full-width rule. Then two-column detail composition within the warm canvas: dominant text-editing area 600px wide, small supporting timestamp on right if space permits. Small mono label "DESCRIPTION". Description text in a 15px comfortable 1.6 line height:
+"The download button returns an error when I try to export my latest invoice."
+The actual description editing area should look like a refined borderless document editor on the page, not an enormous rounded form box. Show a fine neutral underline or subtle rectangular editing boundary with 3px corners and a modest multiline height. No fabricated customer chat thread, replies, activity timeline or AI.
+Then a restrained bottom action row naturally placed beneath the form content, with a pale citrine flat rectangular button "Save changes" (dark text, 34px tall, 4px radius), and a quiet text button "Cancel". Modest spacing, no giant floating footer. Remaining negative space is intentional calm writing space; no filler cards or fake chart.
+All elements should feel aligned to a considered 8px grid. Modern here means confident utility, typographic restraint, an unmistakable split-pane workflow and attention to small details.
+
+Core existing functions only: ticket totals, queue, read requester/priority/date, edit title/description/status and save/cancel. No new tickets, filter chips, charts, search, assignees, messaging, SLA, attachments, invented automation, tags, profiles or navigation destinations.
+Current date is Wednesday October 21, 2026, Europe/Madrid; dates must be plausible relative to it.
+Create realistic production-quality UI with clear hierarchy, strong typography and purposeful spacing. Focus the primary screen on reviewing and editing the selected ticket. Use grouping, alignment, rules and subtle tints before borders or elevation. No centered app card, cards inside cards or feature inventory. No cropped text, malformed words, oversized UI, watercolor texture, watermark or multiple concepts in one image.

@@ -12,8 +12,11 @@ The app is a full-stack support ticket dashboard:
 - `frontend/src/*.test.ts*` covers frontend rendering and status formatting behavior.
 - `.gitlab-ci.yml` runs backend tests, frontend tests, and the frontend build in GitLab CI.
 - `docs/quality-loop.md` explains how issue fixes move through test, evidence, and review.
+- [Goal file](../goal.md) defines a reusable contract for user-selected tickets; [goal loop](goal-loop.md) explains execution, and [example backlog](goal-backlog.md) provides optional issue context.
 - `docs/gitlab-workflow.md` explains GitLab's role as CI verifier, evidence gate, and merge request review surface.
 - `docs/release-review-checklist.md` gives human reviewers a lightweight release decision prompt.
+- `docs/dependency-map.md` maps application, package, test, build, and CI dependencies in Mermaid format.
+- [Agent bug demo](agent-bug-demo.md) provides presenter narration and prompts for discovery, dependency planning, linked issues, and a browser-verified fix.
 - `.gitlab/merge_request_templates/bug-fix.md` brings the same quality loop into merge request review.
 - `scripts/ci/check_bug_fix_evidence.sh` powers the GitLab evidence gate.
 

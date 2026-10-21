@@ -1,0 +1,6 @@
+interface:
+  display_name: "Run issue goal"
+  short_description: "Run supplied tickets through verified goal loops"
+  default_prompt: "Use $run-issue-goal to run goal.md for the tickets I supply."
+policy:
+  allow_implicit_invocation: true

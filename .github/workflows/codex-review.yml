@@ -64,15 +64,36 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Save the trusted runner setup before checking out the PR
+        run: cp scripts/github/prepare_codex_runner.py "$RUNNER_TEMP/prepare-codex-runner.py"
+      - uses: actions/checkout@v5
+        with:
           ref: ${{ needs.prepare.outputs.head_sha }}
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare a dedicated non-sudo reviewer
+        id: codex_runner
+        run: |
+          if ! command -v setfacl >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends --yes acl
+          fi
+          python3 "$RUNNER_TEMP/prepare-codex-runner.py" \
+            --mode review \
+            --runtime-dir "$RUNNER_TEMP/codex-review"
       - uses: openai/codex-action@v1
         id: codex
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           sandbox: read-only
-          safety-strategy: drop-sudo
+          safety-strategy: unprivileged-user
+          codex-user: ${{ steps.codex_runner.outputs.username }}
+          output-file: ${{ steps.codex_runner.outputs.summary_file }}
           allow-bots: true
           model: ${{ vars.CODEX_MODEL }}
           effort: medium
@@ -91,6 +112,9 @@ jobs:
             Do not modify files. Do not run application code, dependency installs, or tests.
             If no actionable findings exist, say so. Note that this is static review,
             not a substitute for CI, human review, or a release decision.
+      - name: Stop Codex user processes after review
+        if: always() && steps.codex_runner.outcome == 'success'
+        run: sudo pkill -KILL -u codex-worker || test "$?" -eq 1
 
   post_feedback:
     needs: [prepare, review]

@@ -1,0 +1,88 @@
+{
+  "seeded_baseline": {
+    "passed": 10,
+    "failed": 20,
+    "failed_cases": [
+      "fetchTickets rejects HTTP 400 without parsing the error body",
+      "fetchTickets rejects HTTP 500 without parsing the error body",
+      "App renders an accessible ticket table with the right data in each row",
+      "App counts summary values for 'mixed statuses and priorities'",
+      "App counts summary values for 'an all-resolved queue'",
+      "App counts summary values for 'only medium and low priorities'",
+      "App counts summary values for 'an unknown API status'",
+      "App renders an unknown API status with a consistent fallback badge",
+      "App saves title, description and canonical status and updates only that ticket",
+      "App requires a known status before saving an unexpected API status",
+      "App renders the ticket dashboard from the API",
+      "App shows an error when the API fails",
+      "getStatusLabel formats canonical API statuses",
+      "getStatusLabel falls back for unknown statuses",
+      "getStatusLabel formats the label and badge class for in_progress",
+      "getStatusLabel uses a safe fallback for \"blocked\"",
+      "getStatusLabel uses a safe fallback for \"in-progress\"",
+      "getStatusLabel uses a safe fallback for \"\"",
+      "getStatusLabel uses a safe fallback for \"toString\"",
+      "getStatusLabel uses a safe fallback for \"__proto__\""
+    ]
+  },
+  "workspace_before": {
+    "passed": 0,
+    "failed": 5,
+    "failed_cases": [
+      "ticket workspace selects the first ticket and navigates a single editor with disabled end controls",
+      "ticket workspace cancels draft fields without closing the selected ticket or sending a request",
+      "ticket workspace keeps the selected ticket open after saving and updates its queue entry only",
+      "ticket workspace blocks navigation and duplicate submissions while a save is pending",
+      "ticket workspace announces transport failures without leaving stale editable controls"
+    ]
+  },
+  "review_before": {
+    "passed": 5,
+    "failed": 2,
+    "failed_cases": [
+      "ticket workspace describes queue buttons with the ticket title, requester, status and priority",
+      "ticket workspace clears a previous success message when the next save fails"
+    ]
+  },
+  "final": {
+    "passed": 18,
+    "failed": 19,
+    "failed_cases": [
+      "fetchTickets rejects HTTP 400 without parsing the error body",
+      "fetchTickets rejects HTTP 500 without parsing the error body",
+      "App renders an accessible ticket queue with the right data in each entry",
+      "App counts summary values for 'mixed statuses and priorities'",
+      "App counts summary values for 'an all-resolved queue'",
+      "App counts summary values for 'only medium and low priorities'",
+      "App counts summary values for 'an unknown API status'",
+      "App renders an unknown API status with a consistent fallback badge",
+      "App saves title, description and canonical status and updates only that ticket",
+      "App renders the ticket dashboard from the API",
+      "App shows an error when the API fails",
+      "getStatusLabel formats canonical API statuses",
+      "getStatusLabel falls back for unknown statuses",
+      "getStatusLabel formats the label and badge class for in_progress",
+      "getStatusLabel uses a safe fallback for \"blocked\"",
+      "getStatusLabel uses a safe fallback for \"in-progress\"",
+      "getStatusLabel uses a safe fallback for \"\"",
+      "getStatusLabel uses a safe fallback for \"toString\"",
+      "getStatusLabel uses a safe fallback for \"__proto__\""
+    ]
+  },
+  "backend": {
+    "before_revert": {
+      "passed": 56,
+      "failed": 0
+    },
+    "after_revert": {
+      "passed": 52,
+      "failed": 4,
+      "failed_cases": [
+        "test_update_ticket_and_read_saved_details[resolved]",
+        "test_list_tickets_contract",
+        "test_seeded_tickets_keep_expected_statuses",
+        "test_list_tickets_includes_resolved_tickets"
+      ]
+    }
+  }
+}

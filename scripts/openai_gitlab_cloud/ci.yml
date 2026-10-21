@@ -1,0 +1,36 @@
+# Isolated Agents API integration, included by the deployed repository CI.
+.isolated_agent_checks:
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID'
+    - if: '$CI_COMMIT_BRANCH'
+
+# Ensure the MR pipeline includes all required checks, not just the evidence gate.
+backend_tests:
+  extends: .isolated_agent_checks
+frontend_tests:
+  extends: .isolated_agent_checks
+frontend_build:
+  extends: .isolated_agent_checks
+
+openai_gitlab_cloud_tests:
+  extends: .isolated_agent_checks
+  image: python:3.12
+  stage: test
+  script:
+    - pip install -r scripts/openai_gitlab_cloud/requirements.txt
+    - python -m pytest scripts/openai_gitlab_cloud/tests -q
+
+openai_gitlab_cloud_dispatch:
+  image: python:3.12
+  stage: .pre
+  resource_group: openai-isolated-gitlab-dispatch
+  environment:
+    name: openai-isolated-dispatch
+    action: prepare
+  timeout: 10m
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUN_ISOLATED_CLOUD_AGENTS == "1" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+    - when: never
+  script:
+    - pip install -r scripts/openai_gitlab_cloud/requirements.txt
+    - python scripts/openai_gitlab_cloud/cloud.py dispatch

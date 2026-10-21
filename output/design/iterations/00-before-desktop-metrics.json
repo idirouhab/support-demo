@@ -1,0 +1,78 @@
+{
+  "documentWidth": 1440,
+  "height": 960,
+  "items": [
+    {
+      "label": "Workspace/Tickets3total·3active·2high priority",
+      "rect": {
+        "bottom": 75.99888610839844,
+        "height": 75.99888610839844,
+        "left": 0,
+        "right": 1440,
+        "top": 0,
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "HEADER"
+    },
+    {
+      "label": "QueueCurrent tickets03T-101Cannot download invoice - B1Maya PatelOpenhighT-102Refund request needs manager approval - B1Owen ChenUnknownmediumT-103Update billing email - B1Sofia GarciaPendinglow3 tickets",
+      "rect": {
+        "bottom": 960.0000457763672,
+        "height": 884.0011596679688,
+        "left": 0,
+        "right": 390.9598388671875,
+        "top": 75.99888610839844,
+        "width": 390.9598388671875,
+        "x": 0,
+        "y": 75.99888610839844
+      },
+      "tag": "ASIDE"
+    },
+    {
+      "label": "Cannot download invoice - B1",
+      "rect": {
+        "bottom": 323.5658493041992,
+        "height": 63.17522430419922,
+        "left": 439.9162902832031,
+        "right": 1011.1607360839844,
+        "top": 260.390625,
+        "width": 571.2444458007812,
+        "x": 439.9162902832031,
+        "y": 260.390625
+      },
+      "tag": "TEXTAREA"
+    },
+    {
+      "label": "The invoice download shows an error. Please help the requester access their latest invoice.",
+      "rect": {
+        "bottom": 708.1361694335938,
+        "height": 150,
+        "left": 439.9162902832031,
+        "right": 1391.0435485839844,
+        "top": 558.1361694335938,
+        "width": 951.1272583007812,
+        "x": 439.9162902832031,
+        "y": 558.1361694335938
+      },
+      "tag": "TEXTAREA"
+    },
+    {
+      "label": "Save changes",
+      "rect": {
+        "bottom": 900.0000457763672,
+        "height": 55.99888610839844,
+        "left": 439.9162902832031,
+        "right": 609.3861541748047,
+        "top": 844.0011596679688,
+        "width": 169.46986389160156,
+        "x": 439.9162902832031,
+        "y": 844.0011596679688
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "ratio": 1.399999976158142,
+  "width": 1440
+}

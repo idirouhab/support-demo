@@ -76,6 +76,10 @@ jobs:
         run: |
           python -m pip install -r backend/requirements.txt
           npm ci --prefix frontend
+          if ! command -v setfacl >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends --yes acl
+          fi
       - name: Save issue text as data, not shell code
         env:
           ISSUE_JSON: ${{ needs.prepare.outputs.issue_json }}
@@ -85,25 +89,40 @@ jobs:
           from pathlib import Path
           Path(os.environ['RUNNER_TEMP'], 'codex-issue.json').write_text(os.environ['ISSUE_JSON'])
           PY
+      - name: Prepare a dedicated non-sudo Codex user
+        id: codex_runner
+        run: |
+          python3 scripts/github/prepare_codex_runner.py \
+            --mode implement \
+            --runtime-dir "$RUNNER_TEMP/codex-implementation" \
+            --issue-file "$RUNNER_TEMP/codex-issue.json"
       - name: Implement the issue
         uses: openai/codex-action@v1
-        env:
-          CODEX_ISSUE_FILE: ${{ runner.temp }}/codex-issue.json
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           sandbox: workspace-write
-          safety-strategy: drop-sudo
+          # Linux drop-sudo currently breaks service-socket access/DNS; see upstream #160.
+          safety-strategy: unprivileged-user
+          codex-user: ${{ steps.codex_runner.outputs.username }}
           model: ${{ vars.CODEX_MODEL }}
           effort: medium
           codex-args: '["--ephemeral"]'
           prompt-file: .github/codex/issue.md
-          output-file: ${{ runner.temp }}/codex-summary.md
+          output-file: ${{ steps.codex_runner.outputs.summary_file }}
+      - name: Stop Codex user processes before reading generated files
+        if: always() && steps.codex_runner.outcome == 'success'
+        run: sudo pkill -KILL -u codex-worker || test "$?" -eq 1
       # Only serialize data after Codex. Never expose a write token in this job.
-      - name: Capture changes, including new regression tests
+      - name: Verify runner DNS and capture changes, including new regression tests
         id: patch
         run: |
-          git add --intent-to-add -- .
-          git diff --binary HEAD > "$RUNNER_TEMP/codex.patch"
+          python3 - <<'PY'
+          import socket
+          socket.getaddrinfo('results-receiver.actions.githubusercontent.com', 443, type=socket.SOCK_STREAM)
+          print('Artifact service DNS still resolves after Codex.')
+          PY
+          git -c core.hooksPath=/dev/null -c core.fsmonitor=false add --intent-to-add -- .
+          git -c core.hooksPath=/dev/null -c core.fsmonitor=false diff --no-ext-diff --no-textconv --binary HEAD > "$RUNNER_TEMP/codex.patch"
           echo "patch_artifact=codex-issue-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
           if [ -s "$RUNNER_TEMP/codex.patch" ]; then
             echo 'has_patch=true' >> "$GITHUB_OUTPUT"
@@ -118,10 +137,10 @@ jobs:
           if-no-files-found: error
           retention-days: 1
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.codex_runner.outcome == 'success'
         with:
           name: codex-implementation-summary-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/codex-summary.md
+          path: ${{ steps.codex_runner.outputs.summary_file }}
           if-no-files-found: ignore
           retention-days: 7
 

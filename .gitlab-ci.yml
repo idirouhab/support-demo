@@ -3,6 +3,24 @@ stages:
   - quality
   - build
 
+cloud_agents_tests:
+  image: python:3.12
+  stage: test
+  script:
+    - python -m unittest discover -s scripts/gitlab_agents/tests -v
+
+# This job only dispatches sessions. Agent execution happens in OpenAI-hosted sandboxes.
+# Keep secrets protected and launch from the protected default branch only.
+cloud_agents_dispatch:
+  image: python:3.12
+  stage: .pre
+  resource_group: cloud-agents-dispatch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $RUN_CLOUD_AGENTS == "1"'
+    - when: never
+  script:
+    - python scripts/gitlab_agents/cloud.py dispatch
+
 backend_tests:
   image: python:3.12
   stage: test

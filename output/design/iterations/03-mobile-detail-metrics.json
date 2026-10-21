@@ -1,0 +1,78 @@
+{
+  "documentWidth": 390,
+  "height": 844,
+  "items": [
+    {
+      "hidden": false,
+      "rect": {
+        "bottom": 56.71316909790039,
+        "height": 56.71316909790039,
+        "left": 0,
+        "right": 390,
+        "top": 0,
+        "width": 390,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "HEADER"
+    },
+    {
+      "hidden": true,
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "ASIDE"
+    },
+    {
+      "hidden": false,
+      "rect": {
+        "bottom": 255.29576873779297,
+        "height": 88.99553680419922,
+        "left": 20,
+        "right": 370,
+        "top": 166.30023193359375,
+        "width": 350,
+        "x": 20,
+        "y": 166.30023193359375
+      },
+      "tag": "TEXTAREA"
+    },
+    {
+      "hidden": false,
+      "rect": {
+        "bottom": 660.279052734375,
+        "height": 183.99554443359375,
+        "left": 20,
+        "right": 370,
+        "top": 476.2835083007813,
+        "width": 350,
+        "x": 20,
+        "y": 476.2835083007813
+      },
+      "tag": "TEXTAREA"
+    },
+    {
+      "hidden": false,
+      "rect": {
+        "bottom": 724.2745895385742,
+        "height": 43.99553680419922,
+        "left": 20,
+        "right": 148.7890625,
+        "top": 680.279052734375,
+        "width": 128.7890625,
+        "x": 20,
+        "y": 680.279052734375
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "ratio": 1.399999976158142,
+  "width": 390
+}

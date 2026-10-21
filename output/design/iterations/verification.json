@@ -1,0 +1,106 @@
+[
+  {
+    "report": "/private/tmp/support-redesign-baseline.json",
+    "passed": 18,
+    "failed": 19,
+    "failedTests": [
+      "fetchTickets rejects HTTP 400 without parsing the error body",
+      "fetchTickets rejects HTTP 500 without parsing the error body",
+      "App renders an accessible ticket queue with the right data in each entry",
+      "App counts summary values for 'mixed statuses and priorities'",
+      "App counts summary values for 'an all-resolved queue'",
+      "App counts summary values for 'only medium and low priorities'",
+      "App counts summary values for 'an unknown API status'",
+      "App renders an unknown API status with a consistent fallback badge",
+      "App saves title, description and canonical status and updates only that ticket",
+      "App renders the ticket dashboard from the API",
+      "App shows an error when the API fails",
+      "getStatusLabel formats canonical API statuses",
+      "getStatusLabel falls back for unknown statuses",
+      "getStatusLabel formats the label and badge class for in_progress",
+      "getStatusLabel uses a safe fallback for \"blocked\"",
+      "getStatusLabel uses a safe fallback for \"in-progress\"",
+      "getStatusLabel uses a safe fallback for \"\"",
+      "getStatusLabel uses a safe fallback for \"toString\"",
+      "getStatusLabel uses a safe fallback for \"__proto__\""
+    ]
+  },
+  {
+    "report": "/private/tmp/support-redesign-behavior-before.json",
+    "passed": 7,
+    "failed": 3,
+    "failedTests": [
+      "ticket workspace shows one mobile pane and reopens the selected ticket without losing its draft",
+      "ticket workspace keeps mobile save and cancel focus visible and locks Back during a pending save",
+      "ticket workspace preserves independent unsaved drafts while switching tickets and clears only the cancelled draft"
+    ]
+  },
+  {
+    "report": "/private/tmp/support-redesign-iteration-1-tests.json",
+    "passed": 10,
+    "failed": 0,
+    "failedTests": []
+  },
+  {
+    "report": "/private/tmp/support-redesign-iteration-2-before.json",
+    "passed": 10,
+    "failed": 3,
+    "failedTests": [
+      "ticket workspace points the mobile skip link at the visible pane",
+      "ticket workspace focuses mobile ticket navigation on Back so reading does not focus an editable field",
+      "ticket workspace moves focus out of the queue when a resize hides it on mobile"
+    ]
+  },
+  {
+    "report": "/private/tmp/support-redesign-unsaved-before.json",
+    "passed": 10,
+    "failed": 4,
+    "failedTests": [
+      "ticket workspace shows unsaved changes for a restored draft and clears the indicator after cancel or save",
+      "ticket workspace points the mobile skip link at the visible pane",
+      "ticket workspace focuses mobile ticket navigation on Back so reading does not focus an editable field",
+      "ticket workspace moves focus out of the queue when a resize hides it on mobile"
+    ]
+  },
+  {
+    "report": "/private/tmp/support-redesign-focus-before.json",
+    "passed": 14,
+    "failed": 1,
+    "failedTests": [
+      "ticket workspace keeps focus in Description when a breakpoint change leaves the field visible"
+    ]
+  },
+  {
+    "report": "/private/tmp/support-redesign-final-workspace.json",
+    "passed": 15,
+    "failed": 0,
+    "failedTests": []
+  },
+  {
+    "report": "/private/tmp/support-redesign-final-all-tests.json",
+    "passed": 27,
+    "failed": 19,
+    "failedTests": [
+      "fetchTickets rejects HTTP 400 without parsing the error body",
+      "fetchTickets rejects HTTP 500 without parsing the error body",
+      "App renders an accessible ticket queue with the right data in each entry",
+      "App counts summary values for 'mixed statuses and priorities'",
+      "App counts summary values for 'an all-resolved queue'",
+      "App counts summary values for 'only medium and low priorities'",
+      "App counts summary values for 'an unknown API status'",
+      "App renders an unknown API status with a consistent fallback badge",
+      "App saves title, description and canonical status and updates only that ticket",
+      "App renders the ticket dashboard from the API",
+      "App shows an error when the API fails",
+      "getStatusLabel formats canonical API statuses",
+      "getStatusLabel falls back for unknown statuses",
+      "getStatusLabel formats the label and badge class for in_progress",
+      "getStatusLabel uses a safe fallback for \"blocked\"",
+      "getStatusLabel uses a safe fallback for \"in-progress\"",
+      "getStatusLabel uses a safe fallback for \"\"",
+      "getStatusLabel uses a safe fallback for \"toString\"",
+      "getStatusLabel uses a safe fallback for \"__proto__\""
+    ],
+    "workspacePassed": 16
+  }
+]

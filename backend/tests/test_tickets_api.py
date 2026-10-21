@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -20,11 +22,15 @@ def test_list_tickets_contract() -> None:
     assert response.status_code == 200
     tickets = response.json()
     assert len(tickets) == 4
+    ticket_ids = [ticket["id"] for ticket in tickets]
+    assert len(set(ticket_ids)) == len(ticket_ids)
+    assert set(ticket_ids) == {"T-101", "T-102", "T-103", "T-104"}
 
     for ticket in tickets:
         assert set(ticket) == {
             "id",
             "title",
+            "description",
             "requester",
             "priority",
             "status",
@@ -32,8 +38,33 @@ def test_list_tickets_contract() -> None:
         }
 
 
+def test_seeded_tickets_keep_expected_statuses() -> None:
+    response = client.get("/api/tickets")
+
+    assert response.status_code == 200
+    assert {ticket["id"]: ticket["status"] for ticket in response.json()} == {
+        "T-101": "open",
+        "T-102": "in_progress",
+        "T-103": "pending",
+        "T-104": "resolved",
+    }
+
+
+def test_ticket_timestamps_are_parseable_and_include_timezone() -> None:
+    response = client.get("/api/tickets")
+
+    assert response.status_code == 200
+    tickets = response.json()
+    assert tickets
+    for ticket in tickets:
+        created_at = datetime.fromisoformat(ticket["created_at"])
+        assert created_at.utcoffset() is not None, ticket["id"]
+
+
 def test_in_progress_is_canonical_api_status() -> None:
     response = client.get("/api/tickets")
+
+    assert response.status_code == 200
     tickets = response.json()
     ticket_by_id = {ticket["id"]: ticket for ticket in tickets}
 
@@ -53,6 +84,8 @@ def test_list_tickets_includes_resolved_tickets() -> None:
 
 def test_all_returned_statuses_are_canonical() -> None:
     response = client.get("/api/tickets")
+
+    assert response.status_code == 200
     tickets = response.json()
     returned_statuses = {ticket["status"] for ticket in tickets}
 

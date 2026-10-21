@@ -1,113 +1,29 @@
-# Agent Instructions
+# Project instructions
 
-## Project Goal
+Support ticket app: React frontend, FastAPI backend, and GitLab CI/CD. Make small, reviewable changes; preserve the architecture and existing user work.
 
-This repo is a full-stack support ticket app with a frontend, backend, tests, and GitLab CI/CD.
+## Load guidance by scope
 
-Automation agents should make small, reviewable changes and preserve the existing architecture unless explicitly asked otherwise.
+Read the matching file when work enters that folder; its instructions extend this file. For cross-stack work, read both application guides. Read the docs guide when updating bug evidence or assessing release readiness.
 
-## Quality Loop Contract
+- [Frontend](frontend/AGENTS.md): UI behavior, status rendering, tests, and frontend subagents.
+- [Backend](backend/AGENTS.md): API contracts, validation, tests, and backend subagents.
+- [Docs](docs/AGENTS.md): bug history, verification evidence, and human release review.
+- For an explicitly requested issue goal, use [run-issue-goal](.agents/skills/run-issue-goal/SKILL.md): apply [goal.md](goal.md) to user-supplied tickets, then load scoped guidance as needed.
 
-Use this repo to practice a tight SDLC quality loop:
+## Shared quality rules
 
-1. Detect the bug while the relevant code, tests, and product behavior are still in context.
-2. Add or update the closest regression test before or alongside the fix.
-3. Make the smallest implementation change that satisfies the test and preserves the existing architecture.
-4. Run local checks that match GitLab CI as closely as practical.
-5. Keep GitLab visible as the remote review and enforcement layer by preserving `.gitlab-ci.yml`, the merge request template, and the `bug_fix_evidence` quality gate.
-6. Update durable evidence artifacts, especially `docs/bug-log.md`, in the same change.
-7. Surface remaining risk, release readiness, and any human decision needed instead of making release decisions automatically.
-8. Note any follow-up opportunity that could improve the broader SDLC, such as CI gates, review templates, ownership rules, or monitoring.
+- Every bug fix needs a nearby regression test that fails before the fix and passes after it. Cover both layers for cross-stack bugs when practical; explain any limitation and add the closest useful guard.
+- Run checks for each changed layer, matching `.gitlab-ci.yml`. After checks pass, update `docs/bug-log.md` in the same change; an undocumented fix is incomplete.
+- Canonical wire statuses are `open`, `pending`, `in_progress`, and `resolved`. Keep frontend/backend contracts consistent.
+- Preserve GitLab CI, the merge request template, and `bug_fix_evidence`. For gate changes, run `BASE_REF=HEAD CHECK_WORKTREE=1 sh scripts/ci/check_bug_fix_evidence.sh` from the root.
+- Report changes, regression coverage, checks actually run, remaining risk, human decisions, and relevant SDLC follow-up. A human decides whether to merge and release.
 
-## Bug Fix Policy
+## Delegation
 
-Every bug fix must include a regression test.
-
-A regression test should:
-
-- fail before the fix
-- pass after the fix
-- cover the behavior reported by the bug
-- live as close as possible to the layer where the bug occurred
-
-If a bug crosses the frontend/backend boundary, add coverage on both sides when practical:
-
-- backend contract or API test
-- frontend rendering or behavior test
-
-If a regression test is not practical, explain why in the final summary and add the closest useful guard test.
-
-Every bug fix must also update the dated bug history in `docs/bug-log.md` after the regression test has been implemented and the relevant checks have passed.
-
-Bug history entries should include:
-
-- date fixed
-- symptom
-- root cause
-- fix summary
-- regression test added
-- checks run
-- detection point
-- evidence
-- human decision needed
-- follow-up SDLC opportunity
-
-If the fix is not documented, the bug fix is not complete.
-
-## Status Contract
-
-Ticket statuses must be handled consistently across backend and frontend.
-
-Canonical API statuses are:
-
-- `open`
-- `pending`
-- `in_progress`
-- `resolved`
-
-The frontend may display `in_progress` as `In progress`, but it must not require a different wire value such as `in-progress`.
-
-When fixing status-related bugs:
-
-- centralize normalization or formatting logic
-- avoid duplicating status mappings across components
-- add tests for known status values
-- add a test for unknown statuses so the UI degrades gracefully
-
-Example regression case:
-
-A backend ticket with:
-
-```json
-{ "status": "in_progress" }
-```
-
-must not render as `Unknown` in the frontend.
-
-## Verification
-
-Before finishing, run the relevant local checks.
-
-For backend changes, run backend tests.
-
-For frontend changes, run frontend tests.
-
-For cross-stack changes, run both.
-
-If GitLab CI has equivalent commands in `.gitlab-ci.yml`, prefer matching those commands locally.
-
-For bug-fix evidence gate changes, preview the GitLab gate locally with:
-
-```bash
-BASE_REF=HEAD CHECK_WORKTREE=1 sh scripts/ci/check_bug_fix_evidence.sh
-```
-
-## Final Response
-
-Summarize:
-
-- what changed
-- which regression test was added
-- which checks were run
-- any remaining risk
-- any human release decision or SDLC follow-up that remains
+- Delegate matching work to the roles in the scoped guides unless the user requests no subagents. Routine docs/config edits do not trigger product reviews.
+- Use `api_contract_reviewer` for API schema/status changes or cross-stack integration bugs; use `gitlab_ci_reviewer` for pipeline failures or CI configuration/helper changes.
+- After bug-fix tests and the bug-log update, use `quality_evidence_reviewer` for the evidence audit. Its detailed scope is in the docs guide.
+- Spawn named roles with their exact `agent_type`; `.codex/agents/*.toml` owns model and reasoning settings. Announce those settings and report unavailable roles/models honestly.
+- Give each role bounded scope; run independent work within concurrency limits, reuse findings, and wait for results. All specialists are read-only and must not delegate again; the parent owns edits and verification.
+- For remote GitLab work, identify the project and MR/pipeline revision. Distinguish observed remote results from local checks and proposed checks.
