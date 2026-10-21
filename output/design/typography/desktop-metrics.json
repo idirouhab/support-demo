@@ -1,0 +1,81 @@
+{
+  "docWidth": 1440,
+  "height": 960,
+  "queueWidth": 360,
+  "ratio": 1,
+  "sizes": [
+    {
+      "class": "queue-ticket-title",
+      "size": "18px"
+    },
+    {
+      "class": "ticket-requester",
+      "size": "14px"
+    },
+    {
+      "class": "ticket-indicators",
+      "size": "14px"
+    },
+    {
+      "class": "queue-ticket-title",
+      "size": "18px"
+    },
+    {
+      "class": "ticket-requester",
+      "size": "14px"
+    },
+    {
+      "class": "ticket-indicators",
+      "size": "14px"
+    },
+    {
+      "class": "queue-ticket-title",
+      "size": "18px"
+    },
+    {
+      "class": "ticket-requester",
+      "size": "14px"
+    },
+    {
+      "class": "ticket-indicators",
+      "size": "14px"
+    },
+    {
+      "class": "field-label",
+      "size": "14px"
+    },
+    {
+      "class": "field-label",
+      "size": "14px"
+    },
+    {
+      "class": "property-value",
+      "size": "16px"
+    },
+    {
+      "class": "property-value",
+      "size": "16px"
+    },
+    {
+      "class": "property-value",
+      "size": "16px"
+    },
+    {
+      "class": "field-label",
+      "size": "14px"
+    },
+    {
+      "class": "",
+      "size": "17px"
+    },
+    {
+      "class": "button button-primary",
+      "size": "16px"
+    },
+    {
+      "class": "button button-quiet",
+      "size": "16px"
+    }
+  ],
+  "width": 1440
+}

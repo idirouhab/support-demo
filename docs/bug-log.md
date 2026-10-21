@@ -20,6 +20,26 @@ This file is the dated record of bugs that have occurred in the support ticket a
 
 ## Enhancements
 
+## 2026-10-21 - Increase workspace typography for readability
+
+- Requested enhancement: The user found the redesigned fonts too small. Raise
+  body/Description to 17px, controls/values/buttons to 16px, queue titles to 18px,
+  and all secondary text/labels to at least 14px. Title is 32px desktop/28px mobile.
+  Widen the queue and wrap narrow metadata without shrinking text at breakpoints.
+- Scope: CSS only; behavior, API contracts, branding removal and intentional
+  demo bugs remain unchanged. No new unit assertion duplicates CSS declarations.
+- Checks run: `npm run build` passed; `npm test` reports 27 passed / 19 failed,
+  with the identical exercise failure set and all 16 workspace cases passing.
+  Browser checks at 100% zoom confirm no horizontal overflow at 1440px, 390px
+  and 320px; larger queue metadata wraps without collisions. Mobile Save remains
+  adjacent to Description and is fully reachable with a short scroll.
+- Evidence: Both design agents reviewed paired before/after and narrow-screen
+  captures in `output/design/typography/`. `design-qa.md` records the current
+  scale and measurements. `git diff --check` passed. Backend and remote CI were
+  not run for this CSS enhancement.
+- Human decision: Review the larger type in the local preview. Merge/release
+  remains a separate human decision; the intentional demo baseline is still red.
+
 ## 2026-10-21 - Iterate the workspace design and preserve drafts across navigation
 
 - Enhancement: Two design agents critiqued the rendered workspace, discussed

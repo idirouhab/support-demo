@@ -2,6 +2,38 @@
 
 final result: passed
 
+## Typography follow-up — 2026-10-21
+
+The user found the previous text too small. This follow-up supersedes the font
+sizes and queue-width measurements in the earlier review below. Increase body
+and Description to 17px, values/controls/buttons to 16px, queue titles to 18px,
+and secondary text/labels to at least 14px. Title is 32px desktop/28px mobile.
+Widen the desktop queue to 360px and let narrow metadata wrap into two columns.
+No behavior, API contract or deliberate exercise bug changed.
+
+- Direct 100% captures: `output/design/typography/after-desktop.jpg` (1440×960),
+  `after-mobile.jpg`, `after-mobile-actions.jpg`, `after-mobile-queue.jpg`
+  (390×844), and `after-320-queue.jpg`/`after-320-detail.jpg` (320×844).
+  Pixel dimensions equal CSS viewport dimensions; devicePixelRatio is 1.
+- Matched full-view comparisons: `desktop-before-after.jpg` and
+  `mobile-before-after.jpg` in the same directory; baseline is left, updated
+  typography right. Focused comparison: `editor-before-after.jpg`. No density
+  normalization is required. Both design agents inspected these captures.
+- Typography and wrapping are visibly clearer; no text collisions or horizontal
+  overflow at 320px, 390px or 1440px. At 320px each queue row has matching
+  scrollWidth/clientWidth of 298px. Colors, Geist fonts, icons and copy are
+  unchanged; only type scale and supporting layout dimensions changed.
+- At 390px, Save is initially y802–846 and becomes fully visible at y768–812
+  after a short pane scroll. Retaining readable text takes priority over fitting
+  the complete form above the fold. Save remains directly below Description.
+- `npm run build` passed. `npm test` reports 27 passed / 19 unchanged intentional
+  failures, including all 16 workspace tests passing. Existing checks and browser
+  layout inspection cover this CSS enhancement; no new unit test mirrors font
+  declarations. Backend and remote CI were not run. `git diff --check` passed.
+
+No actionable P1/P2 finding remains in these states. Active viewport override was
+reset after review. Physical-device and assistive-technology limits below remain.
+
 This result covers the requested local redesign and the states below. It is not
 a release approval: the deliberately restored exercise bugs still fail the
 correctness suite. This report supersedes the earlier mock implementation review.

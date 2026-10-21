@@ -1,0 +1,54 @@
+{
+  "docWidth": 390,
+  "height": 844,
+  "ratio": 1,
+  "save": {
+    "bottom": 845.9921875,
+    "height": 44,
+    "left": 20,
+    "right": 162.421875,
+    "top": 801.9921875,
+    "width": 142.421875,
+    "x": 20,
+    "y": 801.9921875
+  },
+  "text": [
+    {
+      "class": "field-label",
+      "font": "14px"
+    },
+    {
+      "class": "field-label",
+      "font": "14px"
+    },
+    {
+      "class": "property-value",
+      "font": "16px"
+    },
+    {
+      "class": "property-value",
+      "font": "16px"
+    },
+    {
+      "class": "property-value",
+      "font": "16px"
+    },
+    {
+      "class": "field-label",
+      "font": "14px"
+    },
+    {
+      "class": "",
+      "font": "17px"
+    },
+    {
+      "class": "button button-primary",
+      "font": "16px"
+    },
+    {
+      "class": "button button-quiet",
+      "font": "16px"
+    }
+  ],
+  "width": 390
+}
